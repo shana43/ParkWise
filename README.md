@@ -84,11 +84,14 @@ db.password=YOUR_PASSWORD
 
 ### Step 2: Run the Application
 ```batch
-# Double-click run.bat or start-web.bat, or execute:
+# Double-click run.bat (for Desktop GUI) or start-web.bat (for Web Interface), or execute:
 cd C:\Users\DHARSHANA\ParkWise
-run.bat
+start-web.bat
 ```
 The scripts will automatically download necessary JDBC drivers, compile, and launch the application.
+
+If you ran `start-web.bat`, open your browser and navigate to the localhost link:
+👉 **[http://localhost:8080](http://localhost:8080)**
 
 ---
 
