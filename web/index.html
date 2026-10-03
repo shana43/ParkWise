@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ParkWise — Parking Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="loginPage" class="page active">
+  <div class="login-container">
+    <div class="login-brand">
+      <div class="brand-icon">🅿️</div>
+      <h1>ParkWise</h1>
+      <p>Smart Parking Management System</p>
+      <ul class="brand-features">
+        <li>✓ Real-time slot management</li>
+        <li>✓ Automatic fee calculation</li>
+        <li>✓ Complete parking history</li>
+        <li>✓ Advanced analytics & reports</li>
+      </ul>
+    </div>
+    <div class="login-form-box">
+      <h2>Welcome Back</h2>
+      <p class="login-sub">Sign in to your admin account</p>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password"/>
+      </div>
+      <div id="loginError" class="alert alert-error hidden"></div>
+      <button class="btn btn-primary btn-full" onclick="handleLogin()" id="loginBtn">Sign In →</button>
+      <div class="hint-box">
+        <span class="hint-label">Default credentials:</span>
+        <span class="hint-val">admin / admin123</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="appPage" class="page hidden">
+
+  <!-- Mobile Overlay -->
+  <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">🅿️</span>
+      <span class="logo-text">ParkWise</span>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="nav-label">MAIN MENU</span>
+      <a class="nav-item active" onclick="showPanel('dashboard')" data-panel="dashboard">
+        <span>📊</span> Dashboard
+      </a>
+      <a class="nav-item" onclick="showPanel('entry')" data-panel="entry">
+        <span>🚗</span> Vehicle Entry
+      </a>
+      <a class="nav-item" onclick="showPanel('exit')" data-panel="exit">
+        <span>🚪</span> Vehicle Exit
+      </a>
+      <a class="nav-item" onclick="showPanel('slots')" data-panel="slots">
+        <span>🅿️</span> Parking Slots
+      </a>
+      <a class="nav-item" onclick="showPanel('history')" data-panel="history">
+        <span>📜</span> History
+      </a>
+      <a class="nav-item" onclick="showPanel('reports')" data-panel="reports">
+        <span>📈</span> Reports
+      </a>
+      <a class="nav-item" onclick="showPanel('vehicles')" data-panel="vehicles">
+        <span>📝</span> Vehicles
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-badge">👤 <span id="sidebarAdmin">Admin</span></div>
+      <button class="btn-logout" onclick="handleLogout()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+        <h2 id="topbarTitle">Dashboard</h2>
+      </div>
+      <div class="topbar-right">
+        <span id="clockDisplay" class="clock"></span>
+      </div>
+    </header>
+
+    <!-- ===== DASHBOARD PANEL ===== -->
+    <section id="panel-dashboard" class="panel active">
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="card mt-20">
+        <div class="card-header">
+          <h3>🚗 Currently Parked Vehicles</h3>
+          <button class="btn btn-sm btn-outline" onclick="loadDashboard()">🔄 Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table id="parkedTable">
+            <thead>
+              <tr><th>Ticket ID</th><th>Vehicle No.</th><th>Owner</th><th>Phone</th><th>Type</th><th>Slot</th><th>Entry Time</th><th>Est. Fee</th><th>Action</th></tr>
+            </thead>
+            <tbody id="parkedTbody"><tr><td colspan="9" class="empty">No vehicles currently parked.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== VEHICLE ENTRY PANEL ===== -->
+    <section id="panel-entry" class="panel hidden">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><h3>🚗 Vehicle Entry Form</h3></div>
+          <div class="form-group">
+            <label>Vehicle Number <span class="required">*</span></label>
+            <input type="text" id="entryVehicleNum" placeholder="e.g. KA01AB1234" oninput="this.value=this.value.toUpperCase().replace(/\s/g,'')"/>
+          </div>
+          <div class="form-group">
+            <label>Owner Name <span class="required">*</span></label>
+            <input type="text" id="entryOwner" placeholder="e.g. Rahul Sharma"/>
+          </div>
+          <div class="form-group">
+            <label>Phone Number <span class="required">*</span></label>
+            <input type="tel" id="entryPhone" placeholder="10-digit number" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')"/>
+          </div>
+          <div class="form-group">
+            <label>Vehicle Type</label>
+            <select id="entryType" onchange="updateSlotBadges()">
+              <option value="Car">🚗 Car</option>
+              <option value="Bike">🏍️ Bike</option>
+            </select>
+          </div>
+          <div class="slot-badges" id="slotBadges"></div>
+          <div id="entryError" class="alert alert-error hidden"></div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="handleEntry()" id="entryBtn">🅿️ Park Vehicle</button>
+            <button class="btn btn-outline" onclick="clearEntryForm()">🔄 Clear</button>
+          </div>
+        </div>
+        <div class="card" id="ticketCard">
+          <div class="card-header"><h3>🎫 Parking Ticket</h3></div>
+          <div id="ticketContent" class="ticket-placeholder">
+            <div class="placeholder-icon">🎫</div>
+            <p>Ticket will appear here after parking.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== VEHICLE EXIT PANEL ===== -->
+    <section id="panel-exit" class="panel hidden">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><h3>🔍 Find Vehicle</h3></div>
+          <div class="search-row">
+            <input type="text" id="exitSearch" placeholder="Enter Ticket ID or Vehicle Number"
+              oninput="this.value=this.value.toUpperCase().replace(/\s/g,'')" onkeydown="if(event.key==='Enter')findVehicleForExit()"/>
+            <button class="btn btn-primary" onclick="findVehicleForExit()" id="exitFindBtn">🔍 Find</button>
+          </div>
+          <div id="exitVehicleInfo" class="vehicle-info-box hidden">
+            <h4>📋 Vehicle Details</h4>
+            <div id="exitDetailsContent"></div>
+            <div class="form-group mt-10">
+              <label>Payment Method</label>
+              <select id="exitPaymentMethod">
+                <option value="Cash">Cash</option><option value="Card">Card</option><option value="UPI">UPI</option>
+              </select>
+            </div>
+            <div id="exitError" class="alert alert-error hidden"></div>
+            <button class="btn btn-success btn-full" onclick="handleExit()" id="exitBtn">🚪 Process Exit & Pay</button>
+          </div>
+          <div id="exitEmptyMsg" class="ticket-placeholder">
+            <div class="placeholder-icon">🔍</div>
+            <p>Search a vehicle to process exit.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>🧾 Receipt</h3>
+            <button id="printReceiptBtn" class="btn btn-outline btn-sm hidden" onclick="printReceipt()">🖨️ Print</button>
+          </div>
+          <div id="receiptContent" class="ticket-placeholder">
+            <div class="placeholder-icon">🧾</div>
+            <p>Receipt appears here after exit.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PARKING SLOTS PANEL ===== -->
+    <section id="panel-slots" class="panel hidden">
+      <div class="card">
+        <div class="card-header">
+          <h3>🅿️ Parking Slots</h3>
+          <div class="filter-row">
+            <select id="slotFilter" onchange="loadSlots()">
+              <option value="All">All Types</option>
+              <option value="Bike">Bikes Only</option>
+              <option value="Car">Cars Only</option>
+            </select>
+            <button class="btn btn-sm btn-outline" onclick="loadSlots()">🔄 Refresh</button>
+          </div>
+        </div>
+        <div class="slot-legend">
+          <span class="badge-available">🟢 Available</span>
+          <span class="badge-occupied">🔴 Occupied</span>
+          <span id="slotCountBadges" style="margin-left:auto;"></span>
+        </div>
+        <div class="slots-grid" id="slotsGrid"></div>
+      </div>
+    </section>
+
+    <!-- ===== HISTORY PANEL ===== -->
+    <section id="panel-history" class="panel hidden">
+      <div class="card">
+        <div class="card-header">
+          <h3>📜 Parking History</h3>
+          <button class="btn btn-outline btn-sm" onclick="exportHistoryCSV()">📥 Export CSV</button>
+        </div>
+        <div class="filter-bar">
+          <input type="text" id="histSearch" placeholder="🔍 Search ticket, vehicle..."
+            oninput="this.value=this.value.toUpperCase()"/>
+          <input type="date" id="histFrom" title="From date"/>
+          <input type="date" id="histTo" title="To date"/>
+          <button class="btn btn-primary btn-sm" onclick="loadHistory()">🔍 Search</button>
+          <button class="btn btn-outline btn-sm" onclick="resetHistory()">🔄 Reset</button>
+        </div>
+        <div class="table-wrap">
+          <table id="historyTable">
+            <thead>
+              <tr><th>Ticket ID</th><th>Vehicle No.</th><th>Owner</th><th>Type</th><th>Slot</th><th>Entry</th><th>Exit</th><th>Duration</th><th>Amount</th><th>Status</th></tr>
+            </thead>
+            <tbody id="historyTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== REPORTS PANEL ===== -->
+    <section id="panel-reports" class="panel hidden">
+      <div class="card">
+        <div class="card-header">
+          <h3>📈 Reports & Analytics</h3>
+          <button class="btn btn-outline btn-sm" onclick="printReport()">🖨️ Print</button>
+        </div>
+        <div class="filter-bar">
+          <input type="date" id="repFrom" title="From date"/>
+          <input type="date" id="repTo" title="To date"/>
+          <button class="btn btn-primary btn-sm" onclick="loadReports()">📊 Generate</button>
+          <button class="btn btn-outline btn-sm" onclick="quickReport('today')">Today</button>
+          <button class="btn btn-outline btn-sm" onclick="quickReport('week')">This Week</button>
+          <button class="btn btn-outline btn-sm" onclick="quickReport('month')">This Month</button>
+        </div>
+        <div class="stats-grid mt-20" id="reportStatsGrid">
+          <!-- Populated by JS -->
+        </div>
+        <div class="two-col mt-20">
+           <div class="card" style="background:var(--bg-input)">
+              <h4>💰 Revenue Breakdown</h4>
+              <div id="revenueBreakdown" style="margin-top:15px; font-size: 14px; line-height: 2.2;"></div>
+           </div>
+           <div class="card" style="background:var(--bg-input)">
+              <h4>🚗 Vehicle Breakdown</h4>
+              <div id="vehicleBreakdown" style="margin-top:15px; font-size: 14px; line-height: 2.2;"></div>
+           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== VEHICLE MANAGEMENT PANEL ===== -->
+    <section id="panel-vehicles" class="panel hidden">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <h3 id="vehicleFormTitle">📝 Add Vehicle</h3>
+          </div>
+          <div class="form-group">
+            <label>Vehicle Number <span class="required">*</span></label>
+            <input type="text" id="vNum" placeholder="e.g. KA01AB1234" oninput="this.value=this.value.toUpperCase().replace(/\s/g,'')"/>
+          </div>
+          <div class="form-group">
+            <label>Owner Name <span class="required">*</span></label>
+            <input type="text" id="vOwner" placeholder="e.g. Rahul Sharma"/>
+          </div>
+          <div class="form-group">
+            <label>Phone <span class="required">*</span></label>
+            <input type="tel" id="vPhone" placeholder="10-digit number" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')"/>
+          </div>
+          <div class="form-group">
+            <label>Vehicle Type</label>
+            <select id="vType">
+              <option value="Car">🚗 Car</option>
+              <option value="Bike">🏍️ Bike</option>
+            </select>
+          </div>
+          <div id="vError" class="alert alert-error hidden"></div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="saveVehicle()" id="vSaveBtn">➕ Add</button>
+            <button class="btn btn-outline" onclick="clearVehicleForm()">🔄 Clear</button>
+            <button class="btn btn-danger hidden" onclick="deleteVehicle()" id="vDeleteBtn">🗑️ Delete</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>🚗 Vehicle Records</h3>
+            <div class="search-row-sm">
+              <input type="text" id="vSearch" placeholder="Search..." onkeydown="if(event.key==='Enter')loadVehicles()"/>
+              <button class="btn btn-sm btn-outline" onclick="loadVehicles()">🔍</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="vehicleTable">
+              <thead>
+                <tr><th>ID</th><th>Vehicle No.</th><th>Owner</th><th>Phone</th><th>Type</th><th>Action</th></tr>
+              </thead>
+              <tbody id="vehicleTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- Custom Confirm Modal -->
+<div id="confirmModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3 id="confirmTitle">Confirm</h3>
+    <p id="confirmMessage">Are you sure?</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn btn-primary" id="confirmOkBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
