@@ -2,7 +2,7 @@
    ParkWise Frontend Application Logic
    ============================================ */
 
-const API = window.location.protocol === 'file:' ? 'http://localhost:8080/api' : '/api';
+const API = 'http://localhost:8080/api';
 let currentUser = null;
 let exitCurrentRecord = null;
 let editingVehicleId = null;
