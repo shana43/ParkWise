@@ -5,10 +5,11 @@ WORKDIR /app
 # Copy all source files
 COPY . .
 
-# Download dependencies natively using Docker ADD
-RUN mkdir -p lib
-ADD https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.2.0/mysql-connector-j-8.2.0.jar lib/mysql-connector-j.jar
-ADD https://repo1.maven.org/maven2/com/h2database/h2/2.2.224/h2-2.2.224.jar lib/h2.jar
+# Download dependencies securely with correct permissions
+RUN mkdir -p lib && \
+    wget -qO lib/mysql-connector-j.jar https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.2.0/mysql-connector-j-8.2.0.jar && \
+    wget -qO lib/h2.jar https://repo1.maven.org/maven2/com/h2database/h2/2.2.224/h2-2.2.224.jar && \
+    chmod 644 lib/*.jar
 
 RUN mkdir -p out
 
@@ -47,4 +48,4 @@ COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/web ./web
 
 # Make sure we use colon ':' for classpath separator in Linux/Docker
-CMD ["java", "-cp", "out:lib/mysql-connector-j.jar:lib/h2.jar", "com.parkwise.web.WebServer"]
+CMD ["java", "-Djava.net.preferIPv4Stack=true", "-cp", "out:lib/mysql-connector-j.jar:lib/h2.jar", "com.parkwise.web.WebServer"]

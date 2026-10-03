@@ -36,7 +36,7 @@ public class DatabaseConnection {
             PASSWORD = props.getProperty("db.password", "");
         } catch (Exception e) {
             System.err.println("[DB] Could not load db.properties: " + e.getMessage());
-            URL = "jdbc:h2:./parkwise;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1";
+            URL = "jdbc:h2:/tmp/parkwise;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1";
             USERNAME = "sa";
             PASSWORD = "";
         }

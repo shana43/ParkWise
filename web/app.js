@@ -78,6 +78,11 @@ async function handleLogin() {
   btn.innerHTML = '<div class="spinner"></div>'; btn.disabled = true;
 
   try {
+    console.log('--- FINAL DEBUG ---');
+    console.log('Initiating login request...');
+    console.log('Using API base URL:', API);
+    console.log('Full URL being fetched:', API + '/login');
+    
     const res = await post('/login', { username, password });
     if (res.success) {
       currentUser = { username: res.username, fullName: res.fullName };
@@ -87,7 +92,8 @@ async function handleLogin() {
       showEl(errEl, '❌ ' + res.message);
     }
   } catch (e) {
-    showEl(errEl, '❌ Cannot connect to server. Is the Java backend running?');
+    console.error('Fetch exception occurred:', e);
+    showEl(errEl, '❌ Cannot connect to server. Is the Java backend running? (See console for details)');
   } finally {
     btn.innerHTML = ogText; btn.disabled = false;
   }
