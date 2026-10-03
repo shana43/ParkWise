@@ -15,7 +15,15 @@ import java.util.concurrent.Executors;
  */
 public class WebServer {
 
-    private static final int PORT = 8080;
+    private static int getPort() {
+        String p = System.getenv("PORT");
+        if (p != null && !p.trim().isEmpty()) {
+            try { return Integer.parseInt(p.trim()); }
+            catch (NumberFormatException ignored) {}
+        }
+        return 8080;
+    }
+    private static final int PORT = getPort();
 
     public static void main(String[] args) throws Exception {
         // Prevent server from dying on uncaught exceptions
@@ -49,7 +57,7 @@ public class WebServer {
         System.out.println("[Static] Serving frontend from: " + webRoot);
 
         // Create HTTP server
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 50);
+        HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", PORT), 50);
         server.setExecutor(Executors.newCachedThreadPool());
 
         // Register API routes
