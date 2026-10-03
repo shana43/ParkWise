@@ -5,10 +5,10 @@ WORKDIR /app
 # Copy all source files
 COPY . .
 
-# Download dependencies since lib/ is gitignored
-RUN mkdir -p lib && \
-    curl -sLo lib/mysql-connector-j.jar https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.2.0/mysql-connector-j-8.2.0.jar && \
-    curl -sLo lib/h2.jar https://repo1.maven.org/maven2/com/h2database/h2/2.2.224/h2-2.2.224.jar
+# Download dependencies natively using Docker ADD
+RUN mkdir -p lib
+ADD https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.2.0/mysql-connector-j-8.2.0.jar lib/mysql-connector-j.jar
+ADD https://repo1.maven.org/maven2/com/h2database/h2/2.2.224/h2-2.2.224.jar lib/h2.jar
 
 RUN mkdir -p out
 
