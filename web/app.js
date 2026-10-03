@@ -2,7 +2,11 @@
    ParkWise Frontend Application Logic
    ============================================ */
 
-const API = window.location.protocol === 'file:' ? 'http://localhost:8080/api' : '/api';
+const isLocal = window.location.hostname === 'localhost' || window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1';
+let API = isLocal ? 'http://localhost:8080/api' : '/api';
+if (!isLocal && typeof CONFIG !== 'undefined' && CONFIG.API_URL) {
+    API = CONFIG.API_URL;
+}
 let currentUser = null;
 let exitCurrentRecord = null;
 let editingVehicleId = null;
