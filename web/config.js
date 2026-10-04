@@ -8,5 +8,5 @@
 const CONFIG = {
     // Example: "https://parkwise-backend.onrender.com/api"
     // Keep it empty ("") if you are testing locally.
-    API_URL: "https://parkwise-hive.onrender.com/api"
+    API_URL: ""
 };

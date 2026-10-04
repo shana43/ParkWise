@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: parkwise-backend
+    env: docker
+    plan: free
+    dockerCommand: ""
+    envVars:
+      - key: PORT
+        value: 8080
