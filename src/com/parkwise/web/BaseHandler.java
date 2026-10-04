@@ -30,6 +30,7 @@ public abstract class BaseHandler implements HttpHandler {
 
     protected void sendFile(HttpExchange ex, byte[] bytes, String contentType) throws IOException {
         ex.getResponseHeaders().set("Content-Type", contentType);
+        ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         ex.sendResponseHeaders(200, bytes.length);
         try (OutputStream os = ex.getResponseBody()) { os.write(bytes); }
     }
