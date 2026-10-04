@@ -36,7 +36,7 @@ RUN javac -d out -cp "lib/mysql-connector-j.jar:lib/h2.jar" \
     src/com/parkwise/web/StaticHandler.java \
     src/com/parkwise/web/WebServer.java
 
-RUN cp db.properties out/ || true
+RUN printf "db.url=jdbc:h2:/tmp/parkwise;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1\ndb.username=sa\ndb.password=\n" > out/db.properties
 
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:21-jre
